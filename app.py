@@ -3,11 +3,6 @@ from flask import Flask, render_template, request, redirect, url_for
 import get_mysql_data
 
 app = Flask(__name__)
-# TODO: Add something to find the number of elements (quantity at a certain location) (for dashbard)
-# TODO: Create dashboard like this
-#location  A    B   C
-#Product
-#Quantity
 
 get_mysql_data.create_connection()
 
@@ -86,21 +81,10 @@ def ProductMovement():
 
 @app.route('/dashboard')
 def Dashboard():
-    from_location = get_mysql_data.get_from_table('ProductMovement',
-                                                  col='from_location')
-    to_location = get_mysql_data.get_from_table('ProductMovement',
-                                                col='to_location')
-    quantity = get_mysql_data.get_from_table('ProductMovement', col='quantity')
-    product_id = get_mysql_data.get_from_table('ProductMovement',
-                                               col='product_id')
-
     product_movement = get_mysql_data.get_from_table('ProductMovement')
-
     table = dict()
-    table = defaultdict(lambda: 0, table)
     # keeping 100 items of each in every location (warehouse)
-
-    # creating dict with product_id and all warehouses_id (cross join)
+    table = defaultdict(lambda: 100, table)
 
     for row in product_movement:
         from_location = row[2]
