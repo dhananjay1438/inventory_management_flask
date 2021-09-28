@@ -2,7 +2,7 @@
 Created it for internship purpose
 
 
-## Product Movement Table (Homepage
+## Product Movement Table (Homepage)
 ![Product Movement Table (Homepage)](https://user-images.githubusercontent.com/36970447/135153237-6dc41c3a-86f5-43f8-b816-b791bb955f1c.png)
 
 ## Dashboard
@@ -23,3 +23,9 @@ Created it for internship purpose
 
 ## Adding into products table
  ![image](https://user-images.githubusercontent.com/36970447/135154119-02ff1622-d60c-4857-b04e-24acdb7f4864.png)
+
+## Editing functionality (can make change in the table itself)
+![image](https://user-images.githubusercontent.com/36970447/135154287-ec18b05a-4638-4e20-be10-3f6445b29df9.png)
+
+## Can delete record in any table with just a simple click on trash button
+![image](https://user-images.githubusercontent.com/36970447/135154628-9ac56955-665c-422d-a4bb-d0661badb7e6.png)
