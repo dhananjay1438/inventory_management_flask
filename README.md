@@ -2,6 +2,10 @@
 Created it for internship purpose
 
 
+
+## Website demo (video)
+https://user-images.githubusercontent.com/36970447/135155571-64ab4fbc-ecf7-422f-bc25-9068dde46926.mp4
+
 ## Product Movement Table (Homepage)
 ![Product Movement Table (Homepage)](https://user-images.githubusercontent.com/36970447/135153237-6dc41c3a-86f5-43f8-b816-b791bb955f1c.png)
 
