@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+
+{% block title%}
+<title>Dashboard</title>
+{% endblock %}
+
+
+{% block dashboard_content %}
+
+
+<div class="table-responsive">
+    <table class="table table-hover table-striped table-dark">
+        <thead class="thead-dark">
+            <tr>
+                <th>Warehouses</td>
+                    {% for location in locations %}
+                <td scope="col"> {{ location[1] }}</td>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for pro_id, product in products %}
+            <tr>
+                <th>
+                    {{ product }}
+                </th>
+                {% for loc_id, location in locations %}
+                {% set dict_id = pro_id  ~'_' ~ loc_id %}
+                <td>{{ table[dict_id] }}</td>
+                {% endfor %}
+
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+
+    {% endblock dashboard_content %}

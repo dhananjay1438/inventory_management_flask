@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    {% block title %}
+    <title>Home</title>
+    {% endblock title %}
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{{ url_for('ProductMovement') }}">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-row active">
+                    <a class="nav-link" href="{{ url_for('Dashboard') }}">Dashboard<span
+                            class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-row active">
+                    <a class="nav-link" href="{{ url_for('Location') }}">Location</a>
+                </li>
+                <li class="nav-row active">
+                    <a class="nav-link " href="{{ url_for('Product') }}">Product</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% block dashboard_content %}
+
+    {%block add_btn_and_modal %}
+    <div style="display: flex; justify-content: flex-end;">
+        <button class="btn btn-success" data-toggle="modal" data-target="#add_movement">Add
+            <i class="fas fa-user-plus"></i>
+        </button>
+    </div>
+    <div class="modal" id="add_movement" tabindex="-1" role="form">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add new Location</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" id="product_movement_form">
+                        <div class="form-group">
+                            <label for="movement_id">Movement ID</label>
+                            <input type="number" class="form-control" name="movement_id" id="movement_id"
+                                placeholder="Enter Movement ID" aria-describedby="movement_id_help" required>
+                            <small id="movement_id_help">Enter your movement id which must be unique and should only
+                                consists
+                                of numbers</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="from_location">From Location</label>
+                            <input type="text" class="form-control" name="from_location" id="from_location"
+                                placeholder="Name of the starting location">
+                        </div>
+                        <div class="form-group">
+                            <label for="to_location">To Location</label>
+                            <input type="text" class="form-control" name="to_location" id="to_location" ,
+                                placeholder="Destination">
+                        </div>
+                        <div class="form-group">
+                            <label for="product_id">Product ID</label>
+                            <input type="number" class="form-control" name="product_id" id="product_id"
+                                placeholder="Product ID" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="quantity">Quantity</label>
+                            <input type="number" class="form-control" name="quantity" id="quantity"
+                                placeholder="Enter number of units tranported" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <input type="submit" value="Add" class="btn btn-primary" onclick="validate_data();">
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {%endblock add_btn_and_modal%}
+    <div class="table-responsive">
+        <table class="table table-hover table-striped table-dark">
+            <thead class="thead-dark">
+                <tr>
+                    {% for col in cols %}
+                    <th scope="col">{{col}}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    {% for item in row%}
+                    {% if item == None %}
+                    <td>-</td>
+                    {% else %}
+                    <td name="td{{row[0]}}">
+                        {{item}}
+                    </td>
+                    {% endif %}
+                    {% endfor %}
+                    <td width="12%">
+                        <form method="POST" action="/{{table}}/{{row[0]}}">
+                            <button type="button" name="save_edit" name="save{{row[0]}}" id="{{row[0]}}"
+                                value="{{row[0]}}" class="btn btn-success" hidden onclick="retrive_data(this.id)">
+                                <i class="fas fa-save"></i>
+                            </button>
+                            <button type="button" name="edit{{row[0]}}" id="edit{{row[0]}}" value="{{row[0]}}"
+                                class="btn btn-primary" onclick="make_table_editable(this.id);">
+                                <i class="fa fa-pencil"></i> </button>
+                            <button type="submit" name="delete" id="delete{{row[0]}}" value="Delete"
+                                class="btn btn-danger">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+        <input type="hidden" id="table_name" value="{{table}}" name="table">
+    </div>
+    {% block retrive_data %}
+    <script>
+        function retrive_data(id) {
+            var td_loc = "td" + id;
+            var tds = document.getElementsByName(td_loc);
+            var table_name = document.getElementById("table_name");
+            $.ajax({
+                url: "{{ url_for('edit_row') }}",
+                data:
+                    JSON.stringify({
+                        "id": tds[0].innerText,
+                        "from_location": tds[2].innerText,
+                        "to_location": tds[3].innerText,
+                        "product_id": tds[4].innerText,
+                        "quantity": tds[5].innerText,
+                        "table": table.value
+                    }),
+                type: 'POST',
+                success: function (response) {
+                    window.location.href = "/"
+                },
+                error: function (response) {
+                    console.log("Iam here" + response)
+                }
+            });
+        }
+    </script>
+    {% endblock retrive_data %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    {% block scripts %}
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    {% endblock scripts %}
+
+    {% endblock dashboard_content %}
+</body>
+
+</html>
