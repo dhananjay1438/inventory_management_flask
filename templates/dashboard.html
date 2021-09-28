@@ -22,7 +22,6 @@
             {% for pro_id, product in products %}
             <tr>
                 <th>
-                    {{ product }}
                 </th>
                 {% for loc_id, location in locations %}
                 {% set dict_id = pro_id  ~'_' ~ loc_id %}
