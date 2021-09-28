@@ -110,7 +110,7 @@
                 <tr>
                     {% for item in row%}
                     {% if item == None %}
-                    <td>-</td>
+                    <td name="td{{row[0]}}">-</td>
                     {% else %}
                     <td name="td{{row[0]}}">
                         {{item}}
@@ -118,7 +118,7 @@
                     {% endif %}
                     {% endfor %}
                     <td width="12%">
-                        <form method="POST" action="/{{table}}/{{row[0]}}">
+                        <form method="POST" action="/{{row[0]}}">
                             <button type="button" name="save_edit" name="save{{row[0]}}" id="{{row[0]}}"
                                 value="{{row[0]}}" class="btn btn-success" hidden onclick="retrive_data(this.id)">
                                 <i class="fas fa-save"></i>
@@ -126,7 +126,7 @@
                             <button type="button" name="edit{{row[0]}}" id="edit{{row[0]}}" value="{{row[0]}}"
                                 class="btn btn-primary" onclick="make_table_editable(this.id);">
                                 <i class="fa fa-pencil"></i> </button>
-                            <button type="submit" name="delete" id="delete{{row[0]}}" value="Delete"
+                            <button type="submit" name="delete" id="delete{{row[0]}}" value="{{table}}"
                                 class="btn btn-danger">
                                 <i class="fa fa-trash"></i>
                             </button>
@@ -135,26 +135,28 @@
                     {% endfor %}
                 </tr>
             </tbody>
+            <input type="hidden" id="table_name" value="{{table}}" name="table">
         </table>
-        <input type="hidden" id="table_name" value="{{table}}" name="table">
     </div>
     {% block retrive_data %}
     <script>
         function retrive_data(id) {
             var td_loc = "td" + id;
             var tds = document.getElementsByName(td_loc);
+            console.log(tds[5].innerText);
             var table_name = document.getElementById("table_name");
+            console.log(table_name.value);
             $.ajax({
                 url: "{{ url_for('edit_row') }}",
                 data:
-                    JSON.stringify({
-                        "id": tds[0].innerText,
-                        "from_location": tds[2].innerText,
-                        "to_location": tds[3].innerText,
-                        "product_id": tds[4].innerText,
-                        "quantity": tds[5].innerText,
-                        "table": table.value
-                    }),
+                {
+                    "id": tds[0].innerText,
+                    "from_location": tds[2].innerText,
+                    "to_location": tds[3].innerText,
+                    "product_id": tds[4].innerText,
+                    "quantity": tds[5].innerText,
+                    "table": table_name.value
+                },
                 type: 'POST',
                 success: function (response) {
                     window.location.href = "/"

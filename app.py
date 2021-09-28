@@ -14,13 +14,7 @@ get_mysql_data.create_connection()
 
 @app.route('/<row_id>', methods=['POST'])
 def delete(row_id):
-    table = ""
-    if 'ProductMovement' in request.form:
-        table = 'ProductMovement'
-    elif "Product" in request.form:
-        table = 'Product'
-    elif "Location" in request.form:
-        table = 'Location'
+    table = request.form.get('delete')
     if request.form.get('edit'):
         row_id = request.form.get('edit')
         row = get_mysql_data.get_from_table(table, row_id)
@@ -92,31 +86,39 @@ def ProductMovement():
 
 @app.route('/dashboard')
 def Dashboard():
-    from_location = get_mysql_data.get_from_table(table='ProductMovement',
+    from_location = get_mysql_data.get_from_table('ProductMovement',
                                                   col='from_location')
     to_location = get_mysql_data.get_from_table('ProductMovement',
-                                                'to_location')
+                                                col='to_location')
     quantity = get_mysql_data.get_from_table('ProductMovement', col='quantity')
     product_id = get_mysql_data.get_from_table('ProductMovement',
                                                col='product_id')
-    locations = get_mysql_data.get_from_table(table="Location", col='*')
-    products = get_mysql_data.get_from_table("Product")
-    length = len(quantity)
+
+    product_movement = get_mysql_data.get_from_table('ProductMovement')
+
     table = dict()
+    table = defaultdict(lambda: 0, table)
     # keeping 100 items of each in every location (warehouse)
-    table = defaultdict(lambda: 100, table)
 
     # creating dict with product_id and all warehouses_id (cross join)
-    for i in range(length):
-        from_loc = f'{product_id[i][0]}_{from_location[i][0]}'
-        to_loc = f'{product_id[i][0]}_{to_location[i][0]}'
-        if from_location[i][0] == None:
-            table[to_loc] = table[to_loc] + quantity[i][0]
-        elif to_location[i][0] == None:
-            table[from_loc] = table[from_loc] - quantity[i][0]
+
+    for row in product_movement:
+        from_location = row[2]
+        to_location = row[3]
+        product_id = row[4]
+        quantity = row[5]
+
+        if to_location == None:
+            loc = f'{product_id}_{from_location}'
+            table[loc] = table[loc] - quantity
+        elif from_location == None:
+            loc = f'{product_id}_{to_location}'
+            table[loc] = table[loc] + quantity
         else:
-            table[from_loc] = table[from_loc] - quantity[i][0]
-            table[to_loc] = table[to_loc] + quantity[i][0]
+            loc = f'{product_id}_{from_location}'
+            table[loc] = table[loc] - quantity
+            loc = f'{product_id}_{to_location}'
+            table[loc] = table[loc] + quantity
 
     return render_template('dashboard.html',
                            locations=get_mysql_data.get_from_table(
@@ -157,6 +159,7 @@ def Location():
 @app.route('/edit_row', methods=["POST"])
 def edit_row():
     table_name = request.form.get('table')
+    print(table_name)
     if table_name == 'ProductMovement':
         row_id = request.form.get('id')
         from_location = request.form.get('from_location')
@@ -164,17 +167,17 @@ def edit_row():
         product_id = request.form.get('product_id')
         quantity = request.form.get('quantity')
 
-        if to_location == '':
+        if to_location == '' or to_location == '-':
             to_location = None
-        if from_location == '':
+        if from_location == '' or from_location == '-':
             from_location = None
 
-        locations = get_mysql_data.get_from_table('Location', col='location')
-        for row in locations:
-            if row[1].lower() == str(to_location).lower():
-                to_location = row[0]
-            if row[1].lower() == str(from_location).lower():
-                from_location = row[0]
+        locations = get_mysql_data.get_from_table('Location')
+        for loc_id, location in locations:
+            if location.lower() == str(to_location).lower():
+                to_location = loc_id
+            if location.lower() == str(from_location).lower():
+                from_location = loc_id
 
         get_mysql_data.update_table_product_movement(row_id, from_location,
                                                      to_location, product_id,

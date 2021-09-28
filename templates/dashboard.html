@@ -27,6 +27,7 @@
                 {% for loc_id, location in locations %}
                 {% set dict_id = pro_id  ~'_' ~ loc_id %}
                 <td>{{ table[dict_id] }}</td>
+                {{dict_id}}
                 {% endfor %}
 
             </tr>
