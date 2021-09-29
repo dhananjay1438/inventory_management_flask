@@ -42,9 +42,6 @@ def ProductMovement():
             if location.lower() == str(from_location).lower():
                 from_location = loc_id
 
-        print(to_location, from_location)
-        print(locations)
-
         get_mysql_data.insert_into_product_movement(movement_id, from_location,
                                                     to_location, product_id,
                                                     quantity)
@@ -143,7 +140,6 @@ def Location():
 @app.route('/edit_row', methods=["POST"])
 def edit_row():
     table_name = request.form.get('table')
-    print(table_name)
     if table_name == 'ProductMovement':
         row_id = request.form.get('id')
         from_location = request.form.get('from_location')
@@ -157,10 +153,11 @@ def edit_row():
             from_location = None
 
         locations = get_mysql_data.get_from_table('Location')
+
         for loc_id, location in locations:
-            if location.lower() == str(to_location).lower():
+            if location.lower().strip() == str(to_location).lower().strip():
                 to_location = loc_id
-            if location.lower() == str(from_location).lower():
+            if location.lower().strip() == str(from_location).lower().strip():
                 from_location = loc_id
 
         get_mysql_data.update_table_product_movement(row_id, from_location,
