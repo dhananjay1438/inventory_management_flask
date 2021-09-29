@@ -147,9 +147,9 @@ def edit_row():
         product_id = request.form.get('product_id')
         quantity = request.form.get('quantity')
 
-        if to_location == '' or to_location == '-':
+        if to_location.strip() == '' or to_location.strip() == '-':
             to_location = None
-        if from_location == '' or from_location == '-':
+        if from_location.strip() == '' or from_location.strip() == '-':
             from_location = None
 
         locations = get_mysql_data.get_from_table('Location')
